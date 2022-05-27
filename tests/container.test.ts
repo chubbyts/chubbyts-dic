@@ -95,9 +95,15 @@ describe('container', () => {
         throw error;
       });
 
-      expect(() => {
+      try {
         container.get('service');
-      }).toThrow('Could not create service with id "service"');
+        fail('Expected error');
+      } catch (e) {
+        const { name, message, cause } = e as Error & { cause?: unknown };
+        expect(name).toBe('Error');
+        expect(message).toBe('Could not create service with id "service"');
+        expect(cause).toBe(error);
+      }
     });
   });
 

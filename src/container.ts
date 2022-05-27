@@ -51,7 +51,10 @@ export const createContainer = (): Container & {
     try {
       return factoryById(container) as T;
     } catch (e) {
-      throw new Error(`Could not create service with id "${id}"`);
+      const error: Error & { cause?: unknown } = new Error(`Could not create service with id "${id}"`);
+      error.cause = e;
+
+      throw error;
     }
   };
 
