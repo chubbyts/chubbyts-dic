@@ -99,7 +99,7 @@ describe('container', () => {
         container.get('service');
         fail('Expected error');
       } catch (e) {
-        const { name, message, cause } = e as Error & { cause?: unknown };
+        const { name, message, cause } = e as Error & { cause: Error };
         expect(name).toBe('Error');
         expect(message).toBe('Could not create service with id "service"');
         expect(cause).toBe(error);
