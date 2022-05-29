@@ -31,7 +31,7 @@ Dependency injection container (DIC), [PSR-11][2] inspired.
 Through [NPM](https://www.npmjs.com) as [@chubbyts/chubbyts-dic][1].
 
 ```ts
-npm i @chubbyts/chubbyts-dic@^1.0.1
+npm i @chubbyts/chubbyts-dic@^1.0.2
 ```
 
 ## Usage

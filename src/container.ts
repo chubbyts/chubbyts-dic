@@ -2,15 +2,17 @@ import { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
 
 export type Factory = (container: Container, existingFactory?: Factory) => unknown;
 
+export type ConcreteContainer = {
+  sets: (factories: Map<string, Factory>) => void;
+  set: (id: string, factory: Factory) => void;
+} & Container;
+
 const createWrapperFactory = (newFactory: Factory, existingFactory?: Factory): Factory => {
   return (container: Container) => newFactory(container, existingFactory);
 };
 
-export const createContainer = (): Container & {
-  sets: (factories: Map<string, Factory>) => void;
-  set: (id: string, factory: Factory) => void;
-} => {
-  const storedFactories = new Map();
+export const createContainer = (): ConcreteContainer => {
+  const storedFactories = new Map<string, Factory>();
   const storedServices = new Map<string, unknown>();
 
   const sets = (factories: Map<string, Factory>) => {
