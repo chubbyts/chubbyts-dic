@@ -39,7 +39,7 @@ describe('container', () => {
       });
 
       expect(container.get('service')).toMatchInlineSnapshot(`
-        Object {
+        {
           "key2": "value2",
         }
       `);
@@ -53,7 +53,7 @@ describe('container', () => {
       });
 
       expect(container.get('service')).toMatchInlineSnapshot(`
-        Object {
+        {
           "key1": "value1",
         }
       `);
@@ -71,7 +71,7 @@ describe('container', () => {
       expect(service1).toBe(service2);
 
       expect(service1).toMatchInlineSnapshot(`
-        Object {
+        {
           "key1": "value1",
           "key2": "value2",
         }
