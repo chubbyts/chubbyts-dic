@@ -8,20 +8,20 @@ export type ConcreteContainer = {
 } & Container;
 
 const createWrapperFactory = (newFactory: Factory, existingFactory?: Factory): Factory => {
-  return (container: Container) => newFactory(container, existingFactory);
+  return (container: Container): unknown => newFactory(container, existingFactory);
 };
 
 export const createContainer = (): ConcreteContainer => {
   const storedFactories = new Map<string, Factory>();
   const storedServices = new Map<string, unknown>();
 
-  const sets = (factories: Map<string, Factory>) => {
+  const sets = (factories: Map<string, Factory>): void => {
     factories.forEach((factory, id) => {
       set(id, factory);
     });
   };
 
-  const set = (id: string, factory: Factory) => {
+  const set = (id: string, factory: Factory): void => {
     storedServices.delete(id);
     storedFactories.set(id, createWrapperFactory(factory, storedFactories.get(id)));
   };
@@ -36,7 +36,7 @@ export const createContainer = (): ConcreteContainer => {
 
   const has = (id: string): boolean => storedFactories.has(id);
 
-  const container = {
+  const container: ConcreteContainer = {
     sets,
     set,
     get,
@@ -44,7 +44,7 @@ export const createContainer = (): ConcreteContainer => {
   };
 
   const create = <T>(id: string): T => {
-    const factoryById = storedFactories.get(id) as Factory;
+    const factoryById = storedFactories.get(id) as Factory | undefined;
 
     if (!factoryById) {
       throw new Error(`There is no service with id "${id}"`);
