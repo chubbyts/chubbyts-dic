@@ -1,4 +1,4 @@
-import { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
+import type { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
 
 export type Factory = (container: Container, existingFactory?: Factory) => unknown;
 
@@ -44,7 +44,7 @@ export const createContainer = (): ConcreteContainer => {
   };
 
   const create = <T>(id: string): T => {
-    const factoryById = storedFactories.get(id) as Factory | undefined;
+    const factoryById = storedFactories.get(id);
 
     if (!factoryById) {
       throw new Error(`There is no service with id "${id}"`);
@@ -54,6 +54,7 @@ export const createContainer = (): ConcreteContainer => {
       return factoryById(container) as T;
     } catch (e) {
       const error: Error & { cause?: unknown } = new Error(`Could not create service with id "${id}"`);
+      // eslint-disable-next-line functional/immutable-data
       error.cause = e;
 
       throw error;

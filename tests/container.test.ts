@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
-import { createContainer, createParameter, Factory } from '../src/container';
-import { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
+import type { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
+import type { Factory } from '../src/container';
+import { createContainer, createParameter } from '../src/container';
 
 describe('container', () => {
   describe('createContainer', () => {
