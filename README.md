@@ -111,7 +111,7 @@ container.has('myService');
 
 ## Copyright
 
-2023 Dominik Zogg
+2024 Dominik Zogg
 
 [1]: https://www.npmjs.com/package/@chubbyts/chubbyts-dic
 [2]: https://www.php-fig.org/psr/psr-11
