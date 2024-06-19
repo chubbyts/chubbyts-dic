@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 import type { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
 import type { Factory } from '../src/container';
 import { createContainer, createParameter } from '../src/container';
