@@ -23,15 +23,15 @@ Dependency injection container (DIC), [PSR-11][2] inspired.
 
 ## Requirements
 
- * node: 16
- * [chubbyts/chubbyts-dic-types][3]: ^1.2.1
+ * node: 18
+ * [chubbyts/chubbyts-dic-types][3]: ^1.3.0
 
 ## Installation
 
 Through [NPM](https://www.npmjs.com) as [@chubbyts/chubbyts-dic][1].
 
 ```ts
-npm i @chubbyts/chubbyts-dic@^1.2.0
+npm i @chubbyts/chubbyts-dic@^1.3.0
 ```
 
 ## Usage
@@ -111,7 +111,7 @@ container.has('myService');
 
 ## Copyright
 
-2024 Dominik Zogg
+2025 Dominik Zogg
 
 [1]: https://www.npmjs.com/package/@chubbyts/chubbyts-dic
 [2]: https://www.php-fig.org/psr/psr-11
