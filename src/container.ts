@@ -22,12 +22,15 @@ export const createContainer = (): ConcreteContainer => {
   };
 
   const set = (id: string, factory: Factory): void => {
+    // eslint-disable-next-line functional/immutable-data
     storedServices.delete(id);
+    // eslint-disable-next-line functional/immutable-data
     storedFactories.set(id, createWrapperFactory(factory, storedFactories.get(id)));
   };
 
   const get = <T>(id: string): T => {
     if (!storedServices.has(id)) {
+      // eslint-disable-next-line functional/immutable-data
       storedServices.set(id, create<T>(id));
     }
 
