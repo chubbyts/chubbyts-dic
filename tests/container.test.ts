@@ -98,7 +98,7 @@ describe('container', () => {
 
       try {
         container.get('service');
-        fail('Expected error');
+        throw new Error('Expected error');
       } catch (e) {
         const { name, message, cause } = e as Error & { cause: Error };
         expect(name).toBe('Error');

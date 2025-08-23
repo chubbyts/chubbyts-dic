@@ -12,42 +12,11 @@ const createWrapperFactory = (newFactory: Factory, existingFactory?: Factory): F
 };
 
 export const createContainer = (): ConcreteContainer => {
-  const storedFactories = new Map<string, Factory>();
-  const storedServices = new Map<string, unknown>();
+  const _storedFactories = new Map<string, Factory>();
+  const _storedServices = new Map<string, unknown>();
 
-  const sets = (factories: Map<string, Factory>): void => {
-    factories.forEach((factory, id) => {
-      set(id, factory);
-    });
-  };
-
-  const set = (id: string, factory: Factory): void => {
-    // eslint-disable-next-line functional/immutable-data
-    storedServices.delete(id);
-    // eslint-disable-next-line functional/immutable-data
-    storedFactories.set(id, createWrapperFactory(factory, storedFactories.get(id)));
-  };
-
-  const get = <T>(id: string): T => {
-    if (!storedServices.has(id)) {
-      // eslint-disable-next-line functional/immutable-data
-      storedServices.set(id, create<T>(id));
-    }
-
-    return storedServices.get(id) as T;
-  };
-
-  const has = (id: string): boolean => storedFactories.has(id);
-
-  const container: ConcreteContainer = {
-    sets,
-    set,
-    get,
-    has,
-  };
-
-  const create = <T>(id: string): T => {
-    const factoryById = storedFactories.get(id);
+  const _create = <T>(id: string): T => {
+    const factoryById = _storedFactories.get(id);
 
     if (!factoryById) {
       throw new Error(`There is no service with id "${id}"`);
@@ -62,6 +31,29 @@ export const createContainer = (): ConcreteContainer => {
 
       throw error;
     }
+  };
+
+  const container: ConcreteContainer = {
+    sets: (factories: Map<string, Factory>): void => {
+      factories.forEach((factory, id) => {
+        container.set(id, factory);
+      });
+    },
+    set: (id: string, factory: Factory): void => {
+      // eslint-disable-next-line functional/immutable-data
+      _storedServices.delete(id);
+      // eslint-disable-next-line functional/immutable-data
+      _storedFactories.set(id, createWrapperFactory(factory, _storedFactories.get(id)));
+    },
+    get: <T>(id: string): T => {
+      if (!_storedServices.has(id)) {
+        // eslint-disable-next-line functional/immutable-data
+        _storedServices.set(id, _create<T>(id));
+      }
+
+      return _storedServices.get(id) as T;
+    },
+    has: (id: string): boolean => _storedFactories.has(id),
   };
 
   return container;
