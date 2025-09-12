@@ -24,7 +24,7 @@ Dependency injection container (DIC), [PSR-11][2] inspired.
 ## Requirements
 
  * node: 18
- * [chubbyts/chubbyts-dic-types][3]: ^2.0.0
+ * [chubbyts/chubbyts-dic-types][3]: ^2.0.1
 
 ## Installation
 
