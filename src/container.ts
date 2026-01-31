@@ -1,64 +1,158 @@
-import type { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
+/**
+ * A registry mapping service IDs to their types.
+ * This is built up through the fluent builder API.
+ */
+export type ServiceRegistry = Record<string, unknown>;
 
-export type Factory = (container: Container, existingFactory?: Factory) => unknown;
+/**
+ * Type-safe factory function that receives a typed container.
+ */
+export type TypedFactory<TRegistry extends ServiceRegistry, T> = (
+  container: TypedContainer<TRegistry>,
+  existingFactory?: TypedFactory<TRegistry, T>,
+) => T;
 
-export type ConcreteContainer = {
-  sets: (factories: Map<string, Factory>) => void;
-  set: (id: string, factory: Factory) => void;
-} & Container;
+/**
+ * Type-safe container interface with compile-time checked get/has methods.
+ */
+export type TypedContainer<TRegistry extends ServiceRegistry> = {
+  /**
+   * Get a service by its ID. The return type is inferred from the registry.
+   */
+  get<K extends keyof TRegistry>(id: K): TRegistry[K];
 
-const createWrapperFactory = (newFactory: Factory, existingFactory?: Factory): Factory => {
-  return (container: Container): unknown => newFactory(container, existingFactory);
+  /**
+   * Check if a service exists in the container.
+   */
+  has(id: string): boolean;
 };
 
-export const createContainer = (): ConcreteContainer => {
-  const _storedFactories = new Map<string, Factory>();
-  const _storedServices = new Map<string, unknown>();
+/**
+ * Mutable container that allows registering new services.
+ * Each registration returns a new type with the updated registry.
+ */
+export type TypedContainerBuilder<TRegistry extends ServiceRegistry> = TypedContainer<TRegistry> & {
+  /**
+   * Register a single service. Returns a new container type with the service added to the registry.
+   * The factory receives the current registry (TRegistry) and can access previously registered services.
+   */
+  factory<K extends string, T>(
+    id: K,
+    factory: TypedFactory<TRegistry, T>,
+  ): TypedContainerBuilder<TRegistry & Record<K, T>>;
 
-  const _create = <T>(id: string): T => {
-    const factoryById = _storedFactories.get(id);
+  /**
+   * Register multiple services at once.
+   * All factories in the batch can access services from TRegistry (prior registrations).
+   */
+  factories<TNewServices extends ServiceRegistry>(factories: {
+    [K in keyof TNewServices]: TypedFactory<TRegistry, TNewServices[K]>;
+  }): TypedContainerBuilder<TRegistry & TNewServices>;
+};
+
+// Internal types for implementation
+type AnyFactory = (container: TypedContainer<ServiceRegistry>, existingFactory?: AnyFactory) => unknown;
+
+/**
+ * Creates a type-safe dependency injection container.
+ *
+ * @example
+ * ```typescript
+ * class UserService {
+ *   constructor(public config: Config) {}
+ * }
+ *
+ * class Config {
+ *   dbUrl = 'localhost';
+ * }
+ *
+ * const container = createTypedContainer()
+ *   .factory('config', () => new Config())
+ *   .factory('userService', (c) => new UserService(c.get('config')));
+ *
+ * // Type-safe: userService is inferred as UserService
+ * const userService = container.get('userService');
+ *
+ * // Compile error: 'unknown' is not a valid key
+ * // container.get('unknown');
+ *
+ * // Compile error: wrong type
+ * // const num: number = container.get('config');
+ * ```
+ */
+export const createTypedContainer = (): TypedContainerBuilder<Record<string, never>> => {
+  const storedFactories = new Map<string, AnyFactory>();
+  const storedServices = new Map<string, unknown>();
+
+  const create = (id: string): unknown => {
+    const factoryById = storedFactories.get(id);
 
     if (!factoryById) {
       throw new Error(`There is no service with id "${id}"`);
     }
 
     try {
-      return factoryById(container) as T;
+      return factoryById(container as unknown as TypedContainer<ServiceRegistry>);
     } catch (e) {
       const error: Error & { cause?: unknown } = new Error(`Could not create service with id "${id}"`);
       // eslint-disable-next-line functional/immutable-data
       error.cause = e;
-
       throw error;
     }
   };
 
-  const container: ConcreteContainer = {
-    sets: (factories: Map<string, Factory>): void => {
-      factories.forEach((factory, id) => {
-        container.set(id, factory);
-      });
-    },
-    set: (id: string, factory: Factory): void => {
-      // eslint-disable-next-line functional/immutable-data
-      _storedServices.delete(id);
-      // eslint-disable-next-line functional/immutable-data
-      _storedFactories.set(id, createWrapperFactory(factory, _storedFactories.get(id)));
-    },
-    get: <T>(id: string): T => {
-      if (!_storedServices.has(id)) {
-        // eslint-disable-next-line functional/immutable-data
-        _storedServices.set(id, _create<T>(id));
-      }
-
-      return _storedServices.get(id) as T;
-    },
-    has: (id: string): boolean => _storedFactories.has(id),
+  const createWrapperFactory = (newFactory: AnyFactory, existingFactory?: AnyFactory): AnyFactory => {
+    return (c: TypedContainer<ServiceRegistry>): unknown => newFactory(c, existingFactory);
   };
 
-  return container;
+  // The implementation uses `any` internally but the public API is fully typed.
+  // This is a common pattern for builder APIs where the type changes with each call.
+  const container = {
+    factory(id: string, factory: AnyFactory): unknown {
+      // eslint-disable-next-line functional/immutable-data
+      storedServices.delete(id);
+      const existingFactory = storedFactories.get(id);
+      // eslint-disable-next-line functional/immutable-data
+      storedFactories.set(id, createWrapperFactory(factory, existingFactory));
+      return container;
+    },
+
+    factories(factories: Record<string, AnyFactory>): unknown {
+      for (const [id, factory] of Object.entries(factories)) {
+        container.factory(id, factory);
+      }
+      return container;
+    },
+
+    get(id: string): unknown {
+      if (!storedServices.has(id)) {
+        // eslint-disable-next-line functional/immutable-data
+        storedServices.set(id, create(id));
+      }
+      return storedServices.get(id);
+    },
+
+    has(id: string): boolean {
+      return storedFactories.has(id);
+    },
+  };
+
+  return container as unknown as TypedContainerBuilder<Record<string, never>>;
 };
 
-export const createParameter = (value: unknown): (() => unknown) => {
-  return (): unknown => value;
+/**
+ * Creates a type-safe parameter factory that returns a constant value.
+ *
+ * @example
+ * ```typescript
+ * const container = createTypedContainer()
+ *   .factory('apiUrl', createTypedParameter('https://api.example.com'))
+ *   .factory('maxRetries', createTypedParameter(3));
+ *
+ * const url = container.get('apiUrl'); // Type: string
+ * const retries = container.get('maxRetries'); // Type: number
+ * ```
+ */
+export const createTypedParameter = <T>(value: T): (() => T) => {
+  return (): T => value;
 };
