@@ -1,7 +1,7 @@
 {
   "name": "@chubbyts/chubbyts-dic",
   "type": "module",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Dependency injection container (DIC), PSR-11 inspired.",
   "keywords": [
     "chubbyts",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": "chubbyts/chubbyts-dic",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -Rf dist && tsc",
     "cs-fix": "prettier --write src tests",
     "cs": "prettier --check src tests",
     "infection": "stryker run",
@@ -44,16 +44,16 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@chubbyts/chubbyts-dic-types": "^2.1.0"
+    "@chubbyts/chubbyts-dic-types": "^2.1.1"
   },
   "devDependencies": {
-    "@chubbyts/chubbyts-eslint": "^5.1.0",
+    "@chubbyts/chubbyts-eslint": "^5.1.1",
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/vitest-runner": "^9.6.1",
     "@types/node": "^25.6.0",
     "@vitest/coverage-v8": "^4.1.4",
-    "prettier": "^3.8.2",
-    "typescript": "^6.0.2",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.4"
   },
   "publishConfig": {
