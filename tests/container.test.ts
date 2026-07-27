@@ -59,9 +59,9 @@ describe('container', () => {
         }
       `);
 
-      container.set('service', (container: Container, existingFactory?: Factory) => {
+      container.set('service', (existingContainer: Container, existingFactory?: Factory) => {
         return {
-          ...((existingFactory as Factory)(container) as { key1: 'string' }),
+          ...((existingFactory as Factory)(existingContainer) as { key1: 'string' }),
           key2: 'value2',
         };
       });
