@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import type { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
+import type { Container } from '@chubbyts/chubbyts-dic-types/container';
 import type { Factory } from '../src/container.js';
 import { createContainer, createParameter } from '../src/container.js';
 

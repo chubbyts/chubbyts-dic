@@ -31,7 +31,7 @@ Dependency injection container (DIC), [PSR-11][2] inspired.
 Through [NPM](https://www.npmjs.com) as [@chubbyts/chubbyts-dic][1].
 
 ```ts
-npm i @chubbyts/chubbyts-dic@^2.3.1
+npm i @chubbyts/chubbyts-dic@^2.4.0
 ```
 
 ## Usage
@@ -39,8 +39,8 @@ npm i @chubbyts/chubbyts-dic@^2.3.1
 ### Sets
 
 ```ts
-import { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
-import { createContainer } from '@chubbyts/chubbyts-dic/dist/container';
+import { Container } from '@chubbyts/chubbyts-dic-types/container';
+import { createContainer } from '@chubbyts/chubbyts-dic/container';
 import { Logger } from 'some-logger/dist/logger';
 import { createMyService, decorateMyService, MyService } from './service/my-service';
 
@@ -57,8 +57,8 @@ container.sets(new Map([
 ### Set
 
 ```ts
-import { Container } from '@chubbyts/chubbyts-dic-types/dist/container';
-import { createContainer, createParameter, Factory } from '@chubbyts/chubbyts-dic/dist/container';
+import { Container } from '@chubbyts/chubbyts-dic-types/container';
+import { createContainer, createParameter, Factory } from '@chubbyts/chubbyts-dic/container';
 import { Cache } from 'some-cache/dist/cache';
 import { Logger } from 'some-logger/dist/logger';
 import { createMyService, MyService } from './service/my-service';
@@ -91,7 +91,7 @@ container.set('param', createParameter('value'));
 ### Get
 
 ```ts
-import { createContainer } from '@chubbyts/chubbyts-dic/dist/container';
+import { createContainer } from '@chubbyts/chubbyts-dic/container';
 import { MyService } from './service/my-service';
 
 const container = createContainer();
@@ -102,7 +102,7 @@ container.get<MyService>('myService');
 ### Has
 
 ```ts
-import { createContainer } from '@chubbyts/chubbyts-dic/dist/container';
+import { createContainer } from '@chubbyts/chubbyts-dic/container';
 
 const container = createContainer();
 

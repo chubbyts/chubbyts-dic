@@ -1,5 +1,7 @@
 allowBuilds:
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@chubbyts/chubbyts-dic-types@2.4.0'
 packageExtensions:
   '@stryker-mutator/core':
     dependencies:
